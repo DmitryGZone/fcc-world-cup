@@ -8,6 +8,7 @@ else
 fi
 
 # Do not change code above this line. Use the PSQL variable above to query your database.
+$PSQL "TRUNCATE TABLE games, teams RESTART IDENTITY;"
 
 cat games.csv | while IFS="," read YEAR ROUND WINNER OPPONENT WINNER_GOALS OPPONENT_GOALS
 do
@@ -16,12 +17,12 @@ do
   TEAM_ID_WINNER=$($PSQL "SELECT team_id FROM teams WHERE name='$WINNER'")
     if [[ -z $TEAM_ID_WINNER ]]
     then
-      $($PSQL "INSERT INTO teams(name) VALUES ('$WINNER')")
+      $PSQL "INSERT INTO teams(name) VALUES ('$WINNER')"
     fi
   TEAM_ID_OPPONENT=$($PSQL "SELECT team_id FROM teams WHERE name='$OPPONENT'")
     if [[ -z $TEAM_ID_OPPONENT ]]
     then
-      $($PSQL "INSERT INTO teams(name) VALUES ('$OPPONENT')")
+      $PSQL "INSERT INTO teams(name) VALUES ('$OPPONENT')"
     fi
   fi
 done
@@ -32,7 +33,7 @@ do
   then
     WINNER_ID=$($PSQL "SELECT team_id FROM teams WHERE name='$WINNER'")
     OPPONENT_ID=$($PSQL "SELECT team_id FROM teams WHERE name='$OPPONENT'")
-    $($PSQL "INSERT INTO games(year, round, opponent_id, winner_id, winner_goals, opponent_goals)
-      VALUES ($YEAR, '$ROUND', $OPPONENT_ID, $WINNER_ID, $WINNER_GOALS, $OPPONENT_GOALS)")
+    $PSQL "INSERT INTO games(year, round, opponent_id, winner_id, winner_goals, opponent_goals)
+      VALUES ($YEAR, '$ROUND', $OPPONENT_ID, $WINNER_ID, $WINNER_GOALS, $OPPONENT_GOALS)"
   fi
 done
